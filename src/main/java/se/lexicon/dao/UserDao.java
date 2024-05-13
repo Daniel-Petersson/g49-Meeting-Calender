@@ -1,6 +1,6 @@
 package se.lexicon.dao;
 
-import jdk.jshell.spi.ExecutionControl;
+
 import se.lexicon.exception.AuthenticationFailedException;
 import se.lexicon.exception.UserExpiredException;
 import se.lexicon.model.User;
