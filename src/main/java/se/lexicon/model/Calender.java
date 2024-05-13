@@ -11,24 +11,24 @@ public class Calender {
 
     //Constructors
 
-    //todo chain constructors
-
+    //Constructor with minimum required parameters
     public Calender(String title, String username) {
         this.title = title;
         this.username = username;
+        this.meetings = new ArrayList<>();
     }
 
-    //DB query
-
+    //Constructor for DB Query
     public Calender(int id, String title, String username, List<Meeting> meetings) {
+        this(title, username); // Call the other constructor
         this.id = id;
-        this.title = title;
-        this.username = username;
         this.meetings = meetings;
     }
 
-    public Calender(String title) {
-        this.title = title;
+    //Constructor for DB createQuery
+    public Calender(String title, String username, List<Meeting> meetings) {
+        this(title, username); // Call the other constructor
+        this.meetings = meetings;
     }
 
     //Getters

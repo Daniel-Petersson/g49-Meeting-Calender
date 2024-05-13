@@ -15,31 +15,25 @@ public class Meeting {
     //Constructors
     //Create meeting
 
-    //todo chain constructors
+    //Constructor with minimum required parameters
     public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
+        this.timeValidation();
     }
 
-    //DB Query
+    //Constructor for DB Query
     public Meeting(int id, String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calender calendar) {
+        this(title, startTime, endTime, description); // Call the other constructor
         this.id = id;
-        this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
         this.calendar = calendar;
     }
 
-    //DB createQuery
-
+    //Constructor for DB createQuery
     public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calender calendar) {
-        this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
+        this(title, startTime, endTime, description); // Call the other constructor
         this.calendar = calendar;
     }
 
