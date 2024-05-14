@@ -1,8 +1,6 @@
 package se.lexicon.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Meeting {
     private int id;
@@ -10,7 +8,7 @@ public class Meeting {
     private LocalDateTime startTime; // 2020-01-01 10:00
     private LocalDateTime endTime; // 2019-01-01 12:00
     private String description;
-    private Calender calendar;
+    private Calendar calendar;
 
     //Constructors
     //Create meeting
@@ -25,14 +23,14 @@ public class Meeting {
     }
 
     //Constructor for DB Query
-    public Meeting(int id, String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calender calendar) {
+    public Meeting(int id, String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calendar calendar) {
         this(title, startTime, endTime, description); // Call the other constructor
         this.id = id;
         this.calendar = calendar;
     }
 
     //Constructor for DB createQuery
-    public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calender calendar) {
+    public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calendar calendar) {
         this(title, startTime, endTime, description); // Call the other constructor
         this.calendar = calendar;
     }
@@ -60,7 +58,7 @@ public class Meeting {
         return description;
     }
 
-    public Calender getCalendar() {
+    public Calendar getCalendar() {
         return calendar;
     }
 

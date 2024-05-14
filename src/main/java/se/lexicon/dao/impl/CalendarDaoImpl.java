@@ -57,7 +57,7 @@ public class CalendarDaoImpl implements CalendarDao {
             }
 
         }catch (SQLException e){
-            String errorMessage = "Error occurred while finding Calendars by username: " + id;
+            String errorMessage = "Error occurred while finding calendars by username: " + id;
             throw new MySQLException(errorMessage);
         }
         return Optional.empty();
@@ -107,6 +107,20 @@ public class CalendarDaoImpl implements CalendarDao {
 
     @Override
     public boolean deleteCalender(int id) {
-        return false;
+        String deleteQuery = "DELETE FROM calendars WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(deleteQuery)
+        ){
+            statement.setInt(1,id);
+            int rowsDeleted = statement.executeUpdate();
+            if (rowsDeleted > 0){
+                System.out.println("Delete successful");
+                return true;
+            }else {
+                throw new MySQLException("Error deleting metting with the id: "+ id);
+            }
+        } catch (SQLException e) {
+            String errorMessage = "Error occurred while deleting meeting by ID: " + id;
+            throw new MySQLException(errorMessage, e);
+        }
     }
 }

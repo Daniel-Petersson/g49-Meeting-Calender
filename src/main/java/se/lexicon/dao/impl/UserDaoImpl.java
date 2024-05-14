@@ -38,7 +38,7 @@ public class UserDaoImpl implements UserDao {
             statement.setString(2, user.getPassword());
             int numberOfRowsInserted = statement.executeUpdate();
             if (numberOfRowsInserted == 0) {
-                String errorMessage = "Creating user failed, no rows inserted.";
+                String errorMessage = "Creating user failed";
                 throw new MySQLException(errorMessage);
             }
             return user;
