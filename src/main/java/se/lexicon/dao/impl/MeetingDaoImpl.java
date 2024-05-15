@@ -22,7 +22,7 @@ public class MeetingDaoImpl implements MeetingDao {
 
     @Override
     public Meeting createMeeting(Meeting meeting) {
-        String createQuery = "INSERT INTO meeting(title,start_time,end_time,_description,calendar_id";
+        String createQuery = "INSERT INTO meeting(title, start_time, end_time, _description, calendar_id) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(createQuery, Statement.RETURN_GENERATED_KEYS)
         ) {
             statement.setString(1, meeting.getTitle());

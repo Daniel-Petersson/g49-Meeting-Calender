@@ -27,11 +27,12 @@ public class CalendarController {
 
     //Constructor
 
-    public CalendarController(CalendarView view, UserDao userDao, CalendarDao calendarDao) {
-        this.view = view;
-        this.userDao = userDao;
-        this.calendarDao = calendarDao;
-    }
+   public CalendarController(CalendarView view, UserDao userDao, CalendarDao calendarDao, MeetingDao meetingDao) {
+    this.view = view;
+    this.userDao = userDao;
+    this.calendarDao = calendarDao;
+    this.meetingDao = meetingDao;
+}
 
     public void run() {
         while (true) {
