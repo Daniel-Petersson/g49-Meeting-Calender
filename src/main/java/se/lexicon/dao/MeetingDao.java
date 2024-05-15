@@ -10,6 +10,6 @@ public interface MeetingDao {
     Optional<Meeting> findById(int id);
     Collection<Meeting> findAllMeetingsByCalenderId(int calenderId);
     boolean deleteMeeting(int meetingId);
+    boolean updateMeeting(int id,Meeting meeting);
 
-    // Add methods for updating meetings  as needed..
 }

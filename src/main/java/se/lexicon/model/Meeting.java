@@ -35,6 +35,24 @@ public class Meeting {
         this.meetingCalendar = meetingCalendar;
     }
 
+    //Setters
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 
     //Getters
 

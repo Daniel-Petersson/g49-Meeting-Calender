@@ -13,10 +13,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class MeetingDaoImpl  implements MeetingDao {
+public class MeetingDaoImpl implements MeetingDao {
     private final Connection connection;
 
-    public MeetingDaoImpl(Connection connection){
+    public MeetingDaoImpl(Connection connection) {
         this.connection = connection;
     }
 
@@ -54,63 +54,81 @@ public class MeetingDaoImpl  implements MeetingDao {
         }
     }
 
-@Override
-public Optional<Meeting> findById(int id) {
-    String selectQuery = "SELECT m.*, mc.username as username, mc.title as calendarTitle FROM meeting m inner join meeting_calendars mc on m.calendar_id = mc.id WHERE m.id = ?";
+    @Override
+    public Optional<Meeting> findById(int id) {
+        String selectQuery = "SELECT m.*, mc.username as username, mc.title as calendarTitle FROM meeting m inner join meeting_calendars mc on m.calendar_id = mc.id WHERE m.id = ?";
 
-    try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
-        preparedStatement.setInt(1, id);
-        ResultSet resultSet = preparedStatement.executeQuery();
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            Optional<Meeting> meeting = convertToMeeting(resultSet);
-            if (meeting.isPresent()) {
-                return meeting;
-            }
-        }
-    } catch (SQLException e) {
-        String errorMessage = "Error occurred while finding a meeting by ID " + id;
-        throw new MySQLException(errorMessage, e);
-    }
-    return Optional.empty();
-}
-
-@Override
-public Collection<Meeting> findAllMeetingsByCalenderId(int calenderId) {
-    String findAllQuery = "SELECT m.*, mc.username as username, mc.title as calendarTitle FROM meeting m inner join meeting_calendars mc on m.calendar_id = mc.id WHERE m.calendar_id = ?";
-    List<Meeting> meetings = new ArrayList<>();
-    try (PreparedStatement statement = connection.prepareStatement(findAllQuery)) {
-        statement.setInt(1, calenderId);
-        try (ResultSet resultSet = statement.executeQuery()){
-            while (resultSet.next()){
+            if (resultSet.next()) {
                 Optional<Meeting> meeting = convertToMeeting(resultSet);
-                meeting.ifPresent(meetings::add);
+                if (meeting.isPresent()) {
+                    return meeting;
+                }
             }
+        } catch (SQLException e) {
+            String errorMessage = "Error occurred while finding a meeting by ID " + id;
+            throw new MySQLException(errorMessage, e);
         }
-    }catch (SQLException e){
-        String errorMessage = "Error occurred while finding Meetings by calendarId: " + calenderId;
-        throw new MySQLException(errorMessage);
+        return Optional.empty();
     }
-    return meetings;
-}
+
+    @Override
+    public Collection<Meeting> findAllMeetingsByCalenderId(int calenderId) {
+        String findAllQuery = "SELECT m.*, mc.username as username, mc.title as calendarTitle FROM meeting m inner join meeting_calendars mc on m.calendar_id = mc.id WHERE m.calendar_id = ?";
+        List<Meeting> meetings = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(findAllQuery)) {
+            statement.setInt(1, calenderId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Optional<Meeting> meeting = convertToMeeting(resultSet);
+                    meeting.ifPresent(meetings::add);
+                }
+            }
+        } catch (SQLException e) {
+            String errorMessage = "Error occurred while finding Meetings by calendarId: " + calenderId;
+            throw new MySQLException(errorMessage);
+        }
+        return meetings;
+    }
 
     @Override
     public boolean deleteMeeting(int meetingId) {
         String deleteQuery = "DELETE FROM meeting WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(deleteQuery)
-        ){
-            statement.setInt(1,meetingId);
+        ) {
+            statement.setInt(1, meetingId);
             int rowsDeleted = statement.executeUpdate();
-            if (rowsDeleted > 0){
+            if (rowsDeleted > 0) {
                 System.out.println("Delete successful");
                 return true;
-            }else {
-                throw new MySQLException("Error deleting meeting with the id: "+ meetingId);
+            } else {
+                throw new MySQLException("Error deleting meeting with the id: " + meetingId);
             }
         } catch (SQLException e) {
             String errorMessage = "Error occurred while deleting meeting by ID: " + meetingId;
             throw new MySQLException(errorMessage, e);
+        }
+    }
+
+
+    @Override
+    public boolean updateMeeting(int id, Meeting meeting) {
+        String updateQuery = "UPDATE meeting SET title = ?, start_time = ?, end_time = ?, _description = ? WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
+            statement.setString(1, meeting.getTitle());
+            statement.setTimestamp(2, Timestamp.valueOf(meeting.getStartTime()));
+            statement.setTimestamp(3, Timestamp.valueOf(meeting.getEndTime()));
+            statement.setString(4, meeting.getDescription());
+            statement.setInt(5, id); // Use the ID to identify which meeting to update
+
+            int rowsUpdated = statement.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error occurred while updating meeting", e);
         }
     }
 
