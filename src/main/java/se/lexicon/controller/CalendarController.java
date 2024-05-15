@@ -28,12 +28,12 @@ public class CalendarController {
 
     //Constructor
 
-   public CalendarController(CalendarView view, UserDao userDao, CalendarDao calendarDao, MeetingDao meetingDao) {
-    this.view = view;
-    this.userDao = userDao;
-    this.calendarDao = calendarDao;
-    this.meetingDao = meetingDao;
-}
+    public CalendarController(CalendarView view, UserDao userDao, CalendarDao calendarDao, MeetingDao meetingDao) {
+        this.view = view;
+        this.userDao = userDao;
+        this.calendarDao = calendarDao;
+        this.meetingDao = meetingDao;
+    }
 
     public void run() {
         while (true) {
@@ -126,13 +126,14 @@ public class CalendarController {
             view.displayWarningMessage("You need to login first.");
             return;
         }
+        displayAvailableCalendars();
         Scanner scanner = new Scanner(System.in);
-        view.displayMessage("Enter calendar id you want to add meeting to");
+        view.displayMessage("Enter calendar title you want to add meeting to");
         int calendarId = scanner.nextInt();
         Meeting meeting = view.promoteMeetingForm();
         Optional<MeetingCalendar> meetingCalendarOptional = calendarDao.findById(calendarId);
-        if (!meetingCalendarOptional.isPresent()){
-                throw new MySQLException("No calendar with the id: " + calendarId + " found.");
+        if (!meetingCalendarOptional.isPresent()) {
+            throw new MySQLException("No calendar with the id: " + calendarId + " found.");
         } else {
             meeting.setMeetingCalendar(meetingCalendarOptional.get());
             Meeting createdMeeting = meetingDao.createMeeting(meeting);
@@ -146,33 +147,60 @@ public class CalendarController {
             view.displayWarningMessage("You need to login first.");
             return;
         }
+        displayAvailableCalendars();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter calendar id to delete");
-        int removeId = scanner.nextInt();
-        Optional<MeetingCalendar> calendar = calendarDao.findById(removeId);
+        System.out.println("Enter calendar title to delete");
+        String removeTitle = scanner.nextLine();
+        Optional<MeetingCalendar> calendar = calendarDao.findByTitle(removeTitle);
         if (!calendar.isPresent()) {
-            view.displayErrorMessage("Calendar with id: " + removeId);
+            view.displayErrorMessage("No calendar found with the title: " + removeTitle);
         } else {
-            calendarDao.deleteCalender(removeId);
-            view.displaySuccessMessage("Calendar deleted successfully.");
+            int calendarId = calendar.get().getId();
+            Collection<Meeting> meetings = meetingDao.findAllMeetingsByCalenderId(calendarId);
+            for (Meeting meeting : meetings) {
+                meetingDao.deleteMeeting(meeting.getId());
+            }
+            calendarDao.deleteCalender(calendarId);
+            view.displaySuccessMessage("Calendar and its meetings deleted successfully.");
         }
     }
 
     private void deleteMeeting() {
-        if (!isLoggedIn) {
-            view.displayWarningMessage("You need to login first.");
-            return;
-        }
+    if (!isLoggedIn) {
+        view.displayWarningMessage("You need to login first.");
+        return;
+    }
+    while (true) {
+        displayAvailableCalendars();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter the ID of the meeting you want to delete");
+        System.out.println("Enter the id of the calendar you want to display meetings from");
         int id = scanner.nextInt();
-        boolean isDeleted = meetingDao.deleteMeeting(id);
-        if (isDeleted) {
-            view.displaySuccessMessage("Meeting deleted successfully.");
+        Optional<MeetingCalendar> calendar = calendarDao.findById(id);
+        if (!calendar.isPresent()) {
+            view.displayErrorMessage("No calendar found with the id: " + id);
         } else {
-            view.displayErrorMessage("No meeting found with the id: " + id);
+            Collection<Meeting> meetings = meetingDao.findAllMeetingsByCalenderId(calendar.get().getId());
+            if (meetings.isEmpty()) {
+                System.out.println("No meetings found in this calendar. Enter '1' to choose another calendar or '2' to exit.");
+                int choice = scanner.nextInt();
+                if (choice == 2) {
+                    return;
+                }
+            } else {
+                meetings.forEach(meeting -> System.out.println("Id: " + meeting.getId() + ", Title: " + meeting.getTitle()));
+                System.out.println("Enter the ID of the meeting you want to delete");
+                id = scanner.nextInt();
+                boolean isDeleted = meetingDao.deleteMeeting(id);
+                if (isDeleted) {
+                    view.displaySuccessMessage("Meeting deleted successfully.");
+                } else {
+                    view.displayErrorMessage("No meeting found with the id: " + id);
+                }
+                return;
+            }
         }
     }
+}
 
     public void displayCalendar() {
         if (!isLoggedIn) {
@@ -198,6 +226,7 @@ public class CalendarController {
             view.displayWarningMessage("You need to login first.");
             return;
         }
+        displayAvailableCalendars();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the ID of the meeting you want to update");
         int id = scanner.nextInt();
@@ -221,6 +250,7 @@ public class CalendarController {
             view.displayWarningMessage("You need to login first.");
             return;
         }
+        displayAvailableCalendars();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the ID of the calendar you want to display meetings from");
         int id = scanner.nextInt();
@@ -231,5 +261,12 @@ public class CalendarController {
             Collection<Meeting> meetings = meetingDao.findAllMeetingsByCalenderId(id);
             view.displayMeetings(new ArrayList<>(meetings));
         }
+    }
+
+    private void displayAvailableCalendars() {
+        System.out.println("Available calendars");
+        Collection<MeetingCalendar> calendars = calendarDao.findByUsername(username);
+        for (MeetingCalendar calendar : calendars)
+            System.out.println("Id: " + calendar.getId() + ", Title: " + calendar.getTitle() + ", User:" + calendar.getUsername());
     }
 }
