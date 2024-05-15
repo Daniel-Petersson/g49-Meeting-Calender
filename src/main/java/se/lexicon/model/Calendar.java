@@ -3,7 +3,7 @@ package se.lexicon.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Calender {
+public class Calendar {
     private int id;
     private String title;
     private String username;
@@ -11,24 +11,36 @@ public class Calender {
 
     //Constructors
 
-    //todo chain constructors
-
-    public Calender(String title, String username) {
+    //Constructor with minimum required parameters
+    public Calendar(String title, String username) {
         this.title = title;
         this.username = username;
+        this.meetings = new ArrayList<>();
     }
 
-    //DB query
-
-    public Calender(int id, String title, String username, List<Meeting> meetings) {
+    public Calendar(int id, String title, String username) {
         this.id = id;
         this.title = title;
         this.username = username;
+    }
+
+
+
+    public Calendar(String title) {
+        this.title = title;
+    }
+
+    //Constructor for DB Query
+    public Calendar(int id, String title, String username, List<Meeting> meetings) {
+        this(title, username); // Call the other constructor
+        this.id = id;
         this.meetings = meetings;
     }
 
-    public Calender(String title) {
-        this.title = title;
+    //Constructor for DB createQuery
+    public Calendar(String title, String username, List<Meeting> meetings) {
+        this(title, username); // Call the other constructor
+        this.meetings = meetings;
     }
 
     //Getters

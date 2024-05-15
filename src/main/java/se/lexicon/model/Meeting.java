@@ -1,8 +1,6 @@
 package se.lexicon.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Meeting {
     private int id;
@@ -10,36 +8,30 @@ public class Meeting {
     private LocalDateTime startTime; // 2020-01-01 10:00
     private LocalDateTime endTime; // 2019-01-01 12:00
     private String description;
-    private Calender calendar;
+    private Calendar calendar;
 
     //Constructors
     //Create meeting
 
-    //todo chain constructors
+    //Constructor with minimum required parameters
     public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
+        this.timeValidation();
     }
 
-    //DB Query
-    public Meeting(int id, String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calender calendar) {
+    //Constructor for DB Query
+    public Meeting(int id, String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calendar calendar) {
+        this(title, startTime, endTime, description); // Call the other constructor
         this.id = id;
-        this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
         this.calendar = calendar;
     }
 
-    //DB createQuery
-
-    public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calender calendar) {
-        this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.description = description;
+    //Constructor for DB createQuery
+    public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calendar calendar) {
+        this(title, startTime, endTime, description); // Call the other constructor
         this.calendar = calendar;
     }
 
@@ -66,7 +58,7 @@ public class Meeting {
         return description;
     }
 
-    public Calender getCalendar() {
+    public Calendar getCalendar() {
         return calendar;
     }
 

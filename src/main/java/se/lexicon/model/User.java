@@ -1,5 +1,4 @@
 package se.lexicon.model;
-
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -42,7 +41,12 @@ public class User {
         return "Username: " + username+ ", Password:" + password;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     //Methods
+
 
     private String generateRandomPassword(){
         String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

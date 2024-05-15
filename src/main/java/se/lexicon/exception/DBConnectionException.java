@@ -1,0 +1,13 @@
+package se.lexicon.exception;
+
+import java.sql.SQLException;
+
+public class DBConnectionException extends RuntimeException{
+    public DBConnectionException(String message) {
+        super(message);
+    }
+
+    public DBConnectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
