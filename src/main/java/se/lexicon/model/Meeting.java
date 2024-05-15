@@ -8,7 +8,7 @@ public class Meeting {
     private LocalDateTime startTime; // 2020-01-01 10:00
     private LocalDateTime endTime; // 2019-01-01 12:00
     private String description;
-    private Calendar calendar;
+    private MeetingCalendar meetingCalendar;
 
     //Constructors
     //Create meeting
@@ -23,16 +23,16 @@ public class Meeting {
     }
 
     //Constructor for DB Query
-    public Meeting(int id, String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calendar calendar) {
+    public Meeting(int id, String title, LocalDateTime startTime, LocalDateTime endTime, String description, MeetingCalendar meetingCalendar) {
         this(title, startTime, endTime, description); // Call the other constructor
         this.id = id;
-        this.calendar = calendar;
+        this.meetingCalendar = meetingCalendar;
     }
 
     //Constructor for DB createQuery
-    public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description, Calendar calendar) {
+    public Meeting(String title, LocalDateTime startTime, LocalDateTime endTime, String description, MeetingCalendar meetingCalendar) {
         this(title, startTime, endTime, description); // Call the other constructor
-        this.calendar = calendar;
+        this.meetingCalendar = meetingCalendar;
     }
 
 
@@ -58,8 +58,8 @@ public class Meeting {
         return description;
     }
 
-    public Calendar getCalendar() {
-        return calendar;
+    public MeetingCalendar getCalendar() {
+        return meetingCalendar;
     }
 
     //Methods
