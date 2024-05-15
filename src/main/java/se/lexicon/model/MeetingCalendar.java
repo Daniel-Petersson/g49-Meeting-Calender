@@ -3,7 +3,7 @@ package se.lexicon.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Calendar {
+public class MeetingCalendar {
     private int id;
     private String title;
     private String username;
@@ -12,13 +12,13 @@ public class Calendar {
     //Constructors
 
     //Constructor with minimum required parameters
-    public Calendar(String title, String username) {
+    public MeetingCalendar(String title, String username) {
         this.title = title;
         this.username = username;
         this.meetings = new ArrayList<>();
     }
 
-    public Calendar(int id, String title, String username) {
+    public MeetingCalendar(int id, String title, String username) {
         this.id = id;
         this.title = title;
         this.username = username;
@@ -26,19 +26,19 @@ public class Calendar {
 
 
 
-    public Calendar(String title) {
+    public MeetingCalendar(String title) {
         this.title = title;
     }
 
     //Constructor for DB Query
-    public Calendar(int id, String title, String username, List<Meeting> meetings) {
+    public MeetingCalendar(int id, String title, String username, List<Meeting> meetings) {
         this(title, username); // Call the other constructor
         this.id = id;
         this.meetings = meetings;
     }
 
     //Constructor for DB createQuery
-    public Calendar(String title, String username, List<Meeting> meetings) {
+    public MeetingCalendar(String title, String username, List<Meeting> meetings) {
         this(title, username); // Call the other constructor
         this.meetings = meetings;
     }
@@ -72,7 +72,7 @@ public class Calendar {
         meetings.remove(meeting);
     }
 
-    public String calanderInfo(){
+    public String calendarInfo() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Calendar Info:").append("\n");
         stringBuilder.append("Id ").append(id).append("\n");
