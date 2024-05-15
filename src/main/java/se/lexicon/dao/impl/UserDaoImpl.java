@@ -74,25 +74,34 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean authenticate(User user) throws AuthenticationFailedException, UserExpiredException {
-        String authenticateQuery = "SELECT * FROM users WHERE username = ? and _password = ?";
-        try(
-                PreparedStatement statement = connection.prepareStatement(authenticateQuery);
-                ){
-            statement.setString(1,user.getUsername());
-            statement.setString(2,user.getPassword());
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()){
-                boolean isExpired = resultSet.getBoolean("expired");
-                if (isExpired){
-                    throw  new UserExpiredException("User is expired. username: "+user.getUsername());
-                }else {
-                    throw new UserExpiredException("Authentication failed. Invalid credentials.");
-                }
+        //step1: define a select query
+        String query = "SELECT * FROM users WHERE username = ? and _password = ?";
+        //step2: prepared statement
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+        ) {
 
+            //step3: set parameters to prepared statement
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getPassword());
+            //step4: execute query
+            ResultSet resultSet = preparedStatement.executeQuery();
+            //step5: check the result set
+            if (resultSet.next()) {
+                //step6: if result set exists
+                //step7: check if user expired -> throw exception
+                boolean isExpired = resultSet.getBoolean("expired");
+                if (isExpired) {
+                    throw new UserExpiredException("User is expired. username: " + user.getUsername());
+                }
+            } else { //step8: else if the result set was null -> throw exception
+                throw new AuthenticationFailedException("Authentication failed. Invalid credentials.");
             }
+            //step9: return true
             return true;
-        }catch (SQLException e) {
-            throw new MySQLException("Error occurred while authentication user by username" + user.getUsername());
+        } catch (SQLException e) {
+            throw new MySQLException("Error occured while authenticationg user by username" + user.getUsername());
         }
+
     }
 }
