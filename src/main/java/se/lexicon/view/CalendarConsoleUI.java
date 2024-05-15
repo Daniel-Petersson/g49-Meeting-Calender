@@ -1,6 +1,6 @@
 package se.lexicon.view;
 
-import se.lexicon.model.Calendar;
+import se.lexicon.model.MeetingCalendar;
 import se.lexicon.model.Meeting;
 import se.lexicon.model.User;
 
@@ -17,8 +17,8 @@ public class CalendarConsoleUI implements CalendarView {
     }
 
     @Override
-    public void displayCalendar(Calendar calendar) {
-        System.out.println(calendar.calendarInfo());
+    public void displayCalendar(MeetingCalendar meetingCalendar) {
+        System.out.println(meetingCalendar.calendarInfo());
         System.out.println("------------------------");;
     }
 
