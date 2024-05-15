@@ -1,6 +1,14 @@
 package se.lexicon;
 
+import com.mysql.cj.MysqlConnection;
+import se.lexicon.controller.CalendarController;
+import se.lexicon.dao.CalendarDao;
+import se.lexicon.dao.UserDao;
+import se.lexicon.dao.impl.CalendarDaoImpl;
+import se.lexicon.dao.impl.UserDaoImpl;
 import se.lexicon.dao.impl.db.MeetingCalenderDBConnection;
+import se.lexicon.view.CalendarConsoleUI;
+import se.lexicon.view.CalendarView;
 
 import java.sql.Connection;
 
@@ -13,6 +21,10 @@ public class App
     public static void main( String[] args )
     {
         Connection connection = MeetingCalenderDBConnection.getConnection();
-        System.out.println( "Hello World!" );
+        CalendarView view = new CalendarConsoleUI();
+        UserDao userdao = new UserDaoImpl(connection);
+        CalendarDao calendarDao = new CalendarDaoImpl(connection);
+        CalendarController controller = new CalendarController(view,userdao,calendarDao);
+        controller.run();
     }
 }
