@@ -1,6 +1,6 @@
 package se.lexicon.view;
 
-import se.lexicon.model.Calendar;
+import se.lexicon.model.MeetingCalendar;
 import se.lexicon.model.Meeting;
 import se.lexicon.model.User;
 import se.lexicon.util.ConsoleColors;
@@ -23,7 +23,7 @@ public interface CalendarView {
 
     void displayUser(User user);
 
-    void displayCalendar(Calendar calendar);
+    void displayCalendar(MeetingCalendar meetingCalendar);
 
     void displayMeetings(List<Meeting> meetings);
 
