@@ -1,6 +1,7 @@
 package se.lexicon.model;
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class User {
     private String username;
@@ -53,11 +54,10 @@ public class User {
         int passwordLength = 10;
         StringBuilder stringBuilder = new StringBuilder();
         Random random = new SecureRandom();
-        for (int i = 0; i < passwordLength;i++){
-            int randomIndex = random.nextInt(allowedCharacters.length());
+        IntStream.range(0, passwordLength).map(i -> random.nextInt(allowedCharacters.length())).forEach(randomIndex -> {
             char randomChar = allowedCharacters.charAt(randomIndex);
             stringBuilder.append(randomChar);
-        }
+        });
         return stringBuilder.toString();
     }
 
