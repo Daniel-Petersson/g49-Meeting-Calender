@@ -9,7 +9,8 @@ import se.lexicon.model.MeetingCalendar;
 import se.lexicon.model.User;
 import se.lexicon.view.CalendarView;
 
-import javax.sound.midi.Soundbank;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -32,8 +33,8 @@ public class CalendarController {
         this.calendarDao = calendarDao;
     }
 
-    public void run(){
-        while (true){
+    public void run() {
+        while (true) {
             view.displayMenu();
             int choice = getUserChoice();
             switch (choice) {
@@ -53,12 +54,21 @@ public class CalendarController {
                     deleteCalendar();
                     break;
                 case 5:
-                    //todo: call display calendar method
+                    deleteMeeting();
                     break;
                 case 6:
-                    isLoggedIn = false;
+                    displayCalendar();
                     break;
                 case 7:
+                    displayMeetings();
+                    break;
+                case 8:
+                    updateMeetings();
+                    break;
+                case 9:
+                    isLoggedIn = false;
+                    break;
+                case 10:
                     System.exit(0);
                     break;
 
@@ -71,45 +81,45 @@ public class CalendarController {
 
     private int getUserChoice() {
         String operationType = view.promoteString();
-        int choice= -1;
+        int choice = -1;
         try {
             choice = Integer.parseInt(operationType);
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             view.displayErrorMessage("Invalid Input. Please enter a number.");
         }
         return choice;
     }
 
-    private void register(){
+    private void register() {
         view.displayMessage("Enter your username");
         String username = view.promoteString();
         User registerdUser = userDao.createUser(username);
         view.displayUser(registerdUser);
     }
 
-    private void login(){
+    private void login() {
         User user = view.promoteUserForm();
-        try{
+        try {
             isLoggedIn = userDao.authenticate(user);
             username = user.getUsername();
             view.displaySuccessMessage("Login successful.");
-        }catch (Exception e){
+        } catch (Exception e) {
             CalendarExceptionHandler.handelException(e);
         }
     }
 
-    private void createCalendar(){
+    private void createCalendar() {
         if (!isLoggedIn) {
             view.displayWarningMessage("You need to login first.");
             return;
         }
         String calendarTitle = view.promoteCalendarForm();
-        MeetingCalendar createdMeetingCalendar = calendarDao.createCalender(calendarTitle,username);
+        MeetingCalendar createdMeetingCalendar = calendarDao.createCalender(calendarTitle, username);
         view.displaySuccessMessage("Calendar created successfully.");
         view.displayCalendar(createdMeetingCalendar);
     }
 
-    private void createMeeting(){
+    private void createMeeting() {
         if (!isLoggedIn) {
             view.displayWarningMessage("You need to login first.");
             return;
@@ -119,38 +129,95 @@ public class CalendarController {
         view.displaySuccessMessage("Meeting created successfully");
     }
 
-    private boolean deleteCalendar(){
-        if (!isLoggedIn) {
-            view.displayWarningMessage("You need to login first.");
-            return false;
-        }
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter calendar id to delete");
-        int removeId = scanner.nextInt();
-        Optional<MeetingCalendar> calendar = calendarDao.findById(removeId);
-        if (!calendar.isPresent()){
-            view.displayErrorMessage("Calendar with id: " + removeId);
-            return false;
-        } else {
-            calendarDao.deleteCalender(removeId);
-            view.displaySuccessMessage("Calendar deleted successfully.");
-            return true;
-        }
-    }
-
-    public void displayCalendar(){
+    private void deleteCalendar() {
         if (!isLoggedIn) {
             view.displayWarningMessage("You need to login first.");
             return;
         }
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter calendar id to display");
+        System.out.println("Enter calendar id to delete");
+        int removeId = scanner.nextInt();
+        Optional<MeetingCalendar> calendar = calendarDao.findById(removeId);
+        if (!calendar.isPresent()) {
+            view.displayErrorMessage("Calendar with id: " + removeId);
+        } else {
+            calendarDao.deleteCalender(removeId);
+            view.displaySuccessMessage("Calendar deleted successfully.");
+        }
+    }
+
+    private void deleteMeeting() {
+        if (!isLoggedIn) {
+            view.displayWarningMessage("You need to login first.");
+            return;
+        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the meeting you want to delete");
+        int id = scanner.nextInt();
+        boolean isDeleted = meetingDao.deleteMeeting(id);
+        if (isDeleted) {
+            view.displaySuccessMessage("Meeting deleted successfully.");
+        } else {
+            view.displayErrorMessage("No meeting found with the id: " + id);
+        }
+    }
+
+    public void displayCalendar() {
+        if (!isLoggedIn) {
+            view.displayWarningMessage("You need to login first.");
+            return;
+        }
+        Collection<MeetingCalendar> allCalendars = calendarDao.findByUsername(username);
+        allCalendars.forEach(view::displayCalendar);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the calendar you want to display");
         int id = scanner.nextInt();
         Optional<MeetingCalendar> calendar = calendarDao.findById(id);
-        if (!calendar.isPresent()){
-            view.displayErrorMessage("No calendar found with the id: " +id);
-        }else {
-            view.displayCalendar(calendar.get());
+        if (!calendar.isPresent()) {
+            view.displayErrorMessage("No calendar found with the id: " + id);
+        } else {
+            Collection<Meeting> meetings = meetingDao.findAllMeetingsByCalenderId(id);
+            view.displayMeetings(new ArrayList<>(meetings));
+        }
+    }
+
+    private void updateMeetings() {
+        if (!isLoggedIn) {
+            view.displayWarningMessage("You need to login first.");
+            return;
+        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the meeting you want to update");
+        int id = scanner.nextInt();
+        Optional<Meeting> meeting = meetingDao.findById(id);
+        if (!meeting.isPresent()) {
+            view.displayErrorMessage("No meeting found with the id: " + id);
+        } else {
+            Meeting updatedMeeting = view.promoteMeetingForm();
+            boolean isUpdated = meetingDao.updateMeeting(id, updatedMeeting); // Pass the ID to the updateMeeting method
+            if (isUpdated) {
+                view.displaySuccessMessage("Meeting updated successfully.");
+            } else {
+                view.displayErrorMessage("Failed to update the meeting.");
+            }
+        }
+
+    }
+
+    private void displayMeetings() {
+        if (!isLoggedIn) {
+            view.displayWarningMessage("You need to login first.");
+            return;
+        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the calendar you want to display meetings from");
+        int id = scanner.nextInt();
+        Optional<MeetingCalendar> calendar = calendarDao.findById(id);
+        if (!calendar.isPresent()) {
+            view.displayErrorMessage("No calendar found with the id: " + id);
+        } else {
+            Collection<Meeting> meetings = meetingDao.findAllMeetingsByCalenderId(id);
+            view.displayMeetings(new ArrayList<>(meetings));
         }
     }
 }
