@@ -22,6 +22,7 @@ public class MeetingDaoImpl implements MeetingDao {
 
     @Override
     public Meeting createMeeting(Meeting meeting) {
+        System.out.println("meeting = " + meeting.meetingInfo());
         String createQuery = "INSERT INTO meeting(title, start_time, end_time, _description, calendar_id) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(createQuery, Statement.RETURN_GENERATED_KEYS)
         ) {
@@ -29,7 +30,7 @@ public class MeetingDaoImpl implements MeetingDao {
             statement.setTimestamp(2, Timestamp.valueOf(meeting.getStartTime()));
             statement.setTimestamp(3, Timestamp.valueOf(meeting.getEndTime()));
             statement.setString(4, meeting.getDescription());
-            statement.setInt(5, meeting.getId());
+            statement.setInt(5, meeting.getCalendar().getId()); // 1
             int numberOfRowsInserted = statement.executeUpdate();
             if (numberOfRowsInserted == 0) {
                 String errorMessage = "Creating meeting failed";
@@ -39,7 +40,7 @@ public class MeetingDaoImpl implements MeetingDao {
             ) {
                 if (generatedKeys.next()) {
                     int meetingId = generatedKeys.getInt(1);
-                    new Meeting(meetingId, meeting.getTitle(), meeting.getStartTime(), meeting.getEndTime(), meeting.getDescription(), meeting.getCalendar());
+                    meeting = new Meeting(meetingId, meeting.getTitle(), meeting.getStartTime(), meeting.getEndTime(), meeting.getDescription(), meeting.getCalendar());
                     return meeting;
                 } else {
                     String errorMessage = "Creating meeting failed";
@@ -90,7 +91,7 @@ public class MeetingDaoImpl implements MeetingDao {
             }
         } catch (SQLException e) {
             String errorMessage = "Error occurred while finding Meetings by calendarId: " + calenderId;
-            throw new MySQLException(errorMessage);
+            e.printStackTrace();
         }
         return meetings;
     }
@@ -137,7 +138,7 @@ public class MeetingDaoImpl implements MeetingDao {
         String title = resultSet.getString("title");
         Timestamp startTime = resultSet.getTimestamp("start_time");
         Timestamp endTime = resultSet.getTimestamp("end_time");
-        String description = resultSet.getString("description");
+        String description = resultSet.getString("_description");
         int calendarId = resultSet.getInt("calendar_id");
         String calendarUsername = resultSet.getString("username");
         String calendarTitle = resultSet.getString("calendarTitle");

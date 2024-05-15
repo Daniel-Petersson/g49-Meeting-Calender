@@ -53,8 +53,11 @@ public class Meeting {
         this.description = description;
     }
 
+    public void setMeetingCalendar(MeetingCalendar meetingCalendar) {
+        this.meetingCalendar = meetingCalendar;
+    }
 
-    //Getters
+//Getters
 
     public int getId() {
         return id;
@@ -89,6 +92,7 @@ public class Meeting {
         stringBuilder.append("StartTime ").append(startTime).append("\n");
         stringBuilder.append("EndTime ").append(endTime).append("\n");
         stringBuilder.append("Description ").append(description).append("\n");
+        stringBuilder.append("Calendar ").append((meetingCalendar != null ) ? meetingCalendar.calendarInfo() : " - ").append("\n");
         return stringBuilder.toString();
     }
 
@@ -96,4 +100,6 @@ public class Meeting {
         if (this.endTime.isBefore(this.startTime)) throw new IllegalArgumentException("End time must be after the start time");
         if (this.startTime.isBefore(LocalDateTime.now())) throw new IllegalArgumentException("Start time must be in the future");
     }
+
+
 }

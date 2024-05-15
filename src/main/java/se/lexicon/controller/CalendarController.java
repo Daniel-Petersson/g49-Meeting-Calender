@@ -4,6 +4,7 @@ import se.lexicon.dao.CalendarDao;
 import se.lexicon.dao.MeetingDao;
 import se.lexicon.dao.UserDao;
 import se.lexicon.exception.CalendarExceptionHandler;
+import se.lexicon.exception.MySQLException;
 import se.lexicon.model.Meeting;
 import se.lexicon.model.MeetingCalendar;
 import se.lexicon.model.User;
@@ -125,9 +126,19 @@ public class CalendarController {
             view.displayWarningMessage("You need to login first.");
             return;
         }
+        Scanner scanner = new Scanner(System.in);
+        view.displayMessage("Enter calendar id you want to add meeting to");
+        int calendarId = scanner.nextInt();
         Meeting meeting = view.promoteMeetingForm();
-        Meeting createdMeeting = meetingDao.createMeeting(meeting);
-        view.displaySuccessMessage("Meeting created successfully");
+        Optional<MeetingCalendar> meetingCalendarOptional = calendarDao.findById(calendarId);
+        if (!meetingCalendarOptional.isPresent()){
+                throw new MySQLException("No calendar with the id: " + calendarId + " found.");
+        } else {
+            meeting.setMeetingCalendar(meetingCalendarOptional.get());
+            Meeting createdMeeting = meetingDao.createMeeting(meeting);
+            view.displaySuccessMessage("Meeting created successfully");
+        }
+
     }
 
     private void deleteCalendar() {
