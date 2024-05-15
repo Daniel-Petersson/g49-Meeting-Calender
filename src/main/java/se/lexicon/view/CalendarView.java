@@ -14,9 +14,12 @@ public interface CalendarView {
         System.out.println("2. Add Calendar");
         System.out.println("3. Add Meeting");
         System.out.println("4. Delete Calendar");
-        System.out.println("5. Display Calendar Meeting");
-        System.out.println("6. Logout");
-        System.out.println("7. Exit");
+        System.out.println("5. Delete Meeting");
+        System.out.println("6. Display Calendar");
+        System.out.println("7. Display Meeting");
+        System.out.println("8. Update Meeting");
+        System.out.println("9. Logout");
+        System.out.println("10. Exit");
         System.out.println("Enter your choice:");
 
     }
